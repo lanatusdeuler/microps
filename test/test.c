@@ -8,31 +8,10 @@
 #include "net.h"
 
 #include "test.h"
+#include "driver/loopback.h"
 
 static volatile sig_atomic_t terminate;
 static struct net_device *dev;
-
-struct net_device *
-dummy_init(void) {
-    struct net_device *dev;
-
-    dev = net_device_alloc();
-    if (!dev) {
-        errorf("net_device_alloc() failure");
-        return NULL;
-    }
-
-    dev->type = NET_DEVICE_TYPE_DUMMY;
-    dev->mtu = 128;
-    dev->hlen = 0;
-    dev->alen = 0;
-    if (net_device_register(dev) == -1) {
-        errorf("net_device_register() failure");
-        return NULL;
-    }
-    infof("success, dev=%s", dev->name);
-    return dev;
-}
 
 static void
 on_signal(int signum)
@@ -57,9 +36,9 @@ setup(void)
         return -1;
     }
 
-    dev = dummy_init();
+    dev = loopback_init();
     if (!dev) {
-        errorf("dummy_init() failure");
+        errorf("loopback_init() failure");
         return -1;
     }
 
