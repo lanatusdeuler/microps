@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "ip.h"
 #include "util.h"
 #include "net.h"
 
@@ -24,6 +25,7 @@ static int
 setup(void)
 {
     struct sigaction sa = {0};
+    struct ip_iface *iface;
 
     sa.sa_handler = on_signal;
     if (sigaction(SIGINT, &sa, NULL) == -1) {
@@ -41,7 +43,15 @@ setup(void)
         errorf("loopback_init() failure");
         return -1;
     }
-
+    iface = ip_iface_alloc(LOOPBACK_IP_ADDR, LOOPBACK_NETMASK);
+    if (!iface) {
+        errorf("ip_iface_alloc() failure");
+        return -1;
+    }
+    if (ip_iface_register(dev, iface) == -1) {
+        errorf("ip_iface_register() failure");
+        return -1;
+    }
     if (net_run() == -1) {
         errorf("net_run() failure");
         return -1;
