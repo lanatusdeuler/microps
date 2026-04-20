@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "arp.h"
 #include "icmp.h"
 #include "ip.h"
 #include "platform.h"
@@ -209,6 +210,10 @@ net_init(void)
 
     if (platform_init() == -1) {
         errorf("platform_init() failure");
+        return -1;
+    }
+    if (arp_init() == -1) {
+        errorf("arp_init() failure");
         return -1;
     }
     if (ip_init() == -1) {
