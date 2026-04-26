@@ -8,6 +8,7 @@
 #include "driver/ether_tap.h"
 #include "icmp.h"
 #include "ip.h"
+#include "udp.h"
 #include "util.h"
 #include "net.h"
 
@@ -94,10 +95,26 @@ cleanup(void)
 static int
 app_main(void)
 {
+    int desc;
+    ip_endp_t local;
+
+    desc = udp_cmd_open();
+    if (desc == -1) {
+        errorf("udp_cmd_open() failure");
+        return -1;
+    }
+    ip_endp_pton("192.0.2.2:7", &local);
+    if (udp_cmd_bind(desc, local) == -1) {
+        errorf("udp_cmd_bind() failure");
+        udp_cmd_close(desc);
+        return -1;
+    }
+
     debugf("press Ctrl+C to terminate");
     while (!terminate) {
         sleep(1);
     }
+    udp_cmd_close(desc);
     debugf("terminate");
     return 0;
 }
