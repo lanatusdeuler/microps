@@ -9,6 +9,7 @@
 #include "ip.h"
 #include "platform.h"
 
+#include "tcp.h"
 #include "udp.h"
 #include "util.h"
 #include "net.h"
@@ -308,6 +309,10 @@ net_init(void)
     }
     if (udp_init() == -1) {
         errorf("udp_init() failure");
+        return -1;
+    }
+    if (tcp_init() == -1) {
+        errorf("tcp_init() failure");
         return -1;
     }
 
