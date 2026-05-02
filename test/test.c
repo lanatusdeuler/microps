@@ -104,10 +104,12 @@ app_main(void)
     ip_endp_t local, remote;
     uint8_t buf[128];
     ssize_t n;
+    char addr[IP_ENDP_STR_LEN];
 
-    ip_endp_pton("0.0.0.0:7", &local);
-    ip_endp_pton("0.0.0.0:0", &remote);
-    desc = tcp_cmd_open(local, remote, 0);
+    local.addr = IP_ADDR_ANY;
+    local.port = 0;
+    ip_endp_pton("192.0.2.1:10007", &remote);
+    desc = tcp_cmd_open(local, remote, 1);
     if (desc == -1) {
         errorf("tcp_cmd_open() failure");
         return -1;
